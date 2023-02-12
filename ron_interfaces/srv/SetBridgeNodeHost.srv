@@ -1,0 +1,9 @@
+# Attempt to set the host ID for a bridge node.
+
+# The desired host ID
+uint8 new_host_id
+
+---
+
+# Whether or not the attempt was successful
+bool success
