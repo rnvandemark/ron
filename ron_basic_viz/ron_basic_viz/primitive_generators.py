@@ -6,22 +6,26 @@ from panda3d.core import Geom, GeomNode, GeomTriangles, GeomVertexData, \
 BRIDGE_NODE_RGB = (0.67, 0.67, 0.67)
 ROBOT_NODE_RGB = (0.2, 0.2, 0.2)
 
-def build_node(node, length, width, height):
+def build_node(node, lights, length, width, height):
     node.setScale(length, width, height)
     node.set_texture_off(1)
+    for l in lights:
+        node.setLight(l)
     return node
 
-def generate_box(loader, length, width, height):
+def generate_box(loader, lights, length, width, height):
     return build_node(
         loader.loadModel("models/box"),
+        lights,
         length,
         width,
         height
     )
 
-def generate_bridge_node(loader, radius):
+def generate_bridge_node(loader, lights, radius):
     bn = build_node(
         loader.loadModel("models/misc/sphere"),
+        lights,
         radius,
         radius,
         radius
@@ -29,7 +33,7 @@ def generate_bridge_node(loader, radius):
     bn.setColor(*BRIDGE_NODE_RGB)
     return bn
 
-def generate_robot_node(major_radius, minor_radius_factor, precision):
+def generate_robot_node(lights, major_radius, minor_radius_factor, precision):
     r = minor_radius_factor
     h = sqrt(1 - (r**2))
     rads_step = 2 * PI / precision
@@ -82,6 +86,7 @@ def generate_robot_node(major_radius, minor_radius_factor, precision):
 
     return build_node(
         NodePath(node),
+        lights,
         major_radius,
         major_radius,
         major_radius
