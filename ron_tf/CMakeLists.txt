@@ -52,6 +52,10 @@ install(
     RUNTIME DESTINATION lib/${PROJECT_NAME}
     INCLUDES DESTINATION include
 )
+install(
+    DIRECTORY bin
+    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 ament_export_include_directories(include)
 ament_export_libraries(bridge_node_tf_broadcaster robot_node_tf_broadcaster)

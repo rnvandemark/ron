@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+# First argument is the ROS node's namespace
+ROS_NODE_NS="${1:-}"
+# Second argument is the RON node's type (either 'robot' or 'bridge')
+RON_NODE_TYPE="${2:-}"
+# Third argument is the RON node's ID (must be a nonnegative integer unique to
+# all other RON node's of this type)
+RON_NODE_ID="${3:--1}"
+
+shift 3
+
+ROS_EXEC_NAME="${RON_NODE_TYPE}_node_tf_broadcaster"
+ROS_NODE_NAME="${RON_NODE_TYPE}_node_${RON_NODE_ID}_tf_broadcaster"
+
+echo "Running ron_tf executable with:"
+echo "- type: '$ROS_EXEC_NAME'"
+echo "- node ID: '$RON_NODE_ID'"
+echo "- name: '$ROS_NODE_NAME'"
+echo "- namespace: '$ROS_NODE_NS'"
+
+ros2 run ron_tf ${ROS_EXEC_NAME} --ros-args \
+    --remap __node:=${ROS_NODE_NAME} \
+    --remap __ns:=${ROS_NODE_NS} \
+    --param node_id:=${RON_NODE_ID} \
+    $*
