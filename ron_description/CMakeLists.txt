@@ -11,6 +11,10 @@ ament_target_dependencies(
 )
 
 install(
+    DIRECTORY launch config
+    DESTINATION share/${PROJECT_NAME}
+)
+install(
     TARGETS ron_configuration
     RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
