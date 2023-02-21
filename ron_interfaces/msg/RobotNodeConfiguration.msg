@@ -15,7 +15,7 @@
 #     ‾‾T‾‾‾‾‾T‾‾       <- minor radius
 
 # The unique ID of this robot node
-uint8 id
+int8 id
 
 # The radius of this robot node around its center (the widest part)
 float64 major_radius

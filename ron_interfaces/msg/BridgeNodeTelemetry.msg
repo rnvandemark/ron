@@ -6,8 +6,8 @@
 BridgeNodeConfiguration configuration
 
 # The unique ID of each current parent robot node
-uint8[] parent_ids
+int8[] parent_ids
 
 # The unique ID of the current host robot node, which is used by this bridge
 # node to resolve its pose relative to the world
-uint8 host_id
+int8 host_id

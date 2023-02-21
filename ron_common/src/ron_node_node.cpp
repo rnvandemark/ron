@@ -11,19 +11,19 @@ RonNodeNode::RonNodeNode(const std::string& name) :
     {
         RCLCPP_INFO_STREAM(
             get_logger(),
-            "Started with node_id=" << node_id
+            "Started with node_id=" << static_cast<int>(node_id)
         );
     }
     else
     {
         RCLCPP_ERROR_STREAM(
             get_logger(),
-            "Invalid node_id=" << node_id
+            "Invalid node_id=" << static_cast<int>(node_id)
         );
     }
 }
 
-int RonNodeNode::get_node_id() const
+int8_t RonNodeNode::get_node_id() const
 {
     return node_id;
 }

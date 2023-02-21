@@ -2,7 +2,7 @@
 # spheres, this radius is for both directions.
 
 # The unique ID of this bridge node
-uint8 id
+int8 id
 
 # The radius of this bridge node
 float64 radius

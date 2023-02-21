@@ -8,13 +8,13 @@ namespace ron_common {
 class RonNodeNode : public rclcpp::Node
 {
 protected:
-    const int node_id;
+    const int8_t node_id;
     const bool node_id_valid;
 
 public:
     explicit RonNodeNode(const std::string& name);
 
-    int get_node_id() const;
+    int8_t get_node_id() const;
     bool is_node_id_valid() const;
 };
 
