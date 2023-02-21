@@ -5,11 +5,9 @@
 namespace ron_tf {
 
 RonNodeTfBroadcasterI::RonNodeTfBroadcasterI(const char* name_prefix) :
-        rclcpp::Node(std::string(name_prefix) + "_tf_broadcaster")
+    ron_common::RonNodeNode(std::string(name_prefix) + "_tf_broadcaster")
 {
-    // Declare and get required node ID, ensuring it's a proper value
-    node_id = declare_parameter("node_id", -1);
-    node_id_valid = (node_id >= 0);
+    // Only bother continuing if base class met requirements
     if (node_id_valid)
     {
         // Set the optionally configurable TF name root
@@ -20,23 +18,9 @@ RonNodeTfBroadcasterI::RonNodeTfBroadcasterI(const char* name_prefix) :
 
         // Initialize the transform broadcaster
         tf_broadcaster = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
-
-        RCLCPP_INFO_STREAM(
-            get_logger(),
-            "Started with node_id=" << node_id << ", tf_root=\""
-                << tf_root << "\""
-        );
     }
 }
 
-bool RonNodeTfBroadcasterI::isNodeIdValid() const
-{
-    return node_id_valid;
-}
-int RonNodeTfBroadcasterI::getNodeId() const
-{
-    return node_id;
-}
 std::string RonNodeTfBroadcasterI::getTfRoot() const
 {
     return tf_root;

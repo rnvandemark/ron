@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
     // Init ROS network and create the node
     rclcpp::init_and_remove_ros_arguments(argc, argv);
     auto node = std::make_shared<ron_tf::RobotNodeTfBroadcaster>();
-    if (!node->isNodeIdValid())
+    if (!node->is_node_id_valid())
     {
         RCLCPP_ERROR(logger, "Node failed to initialize.");
         return 1;

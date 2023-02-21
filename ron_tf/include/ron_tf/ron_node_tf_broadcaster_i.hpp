@@ -3,16 +3,14 @@
 
 #include <geometry_msgs/msg/transform_stamped.hpp>
 #include <rclcpp/node.hpp>
+#include <ron_common/ron_node_node.hpp>
 #include <tf2_ros/transform_broadcaster.h>
 
 namespace ron_tf {
 
-class RonNodeTfBroadcasterI : public rclcpp::Node
+class RonNodeTfBroadcasterI : public ron_common::RonNodeNode
 {
 protected:
-    int node_id;
-    bool node_id_valid;
-
     std::string tf_root;
 
     std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster;
@@ -20,8 +18,6 @@ protected:
 public:
     explicit RonNodeTfBroadcasterI(const char* name_prefix);
 
-    bool isNodeIdValid() const;
-    int getNodeId() const;
     std::string getTfRoot() const;
 
 protected:
