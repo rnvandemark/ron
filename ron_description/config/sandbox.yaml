@@ -1,4 +1,5 @@
 /**/ron_configuration:
     ros__parameters:
+        bridge_node_radius: 0.12
         robot_node_bottom_face_translation: -0.05
         robot_node_top_face_translation: 0.05

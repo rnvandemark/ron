@@ -28,6 +28,8 @@ public:
 
     bool are_curr_parent_and_host_ids_valid() const;
 
+    void finish_initializing_telemetry(const double radius);
+
 protected:
     void handle_add_or_remove_parent_requests(
         const std::shared_ptr<ron_interfaces::srv::AddOrRemoveBridgeNodeParent::Request> req,

@@ -2,6 +2,7 @@
 
 #include <rclcpp/executors.hpp>
 #include <rclcpp/utilities.hpp>
+#include <ron_common/ros_node_utilities.hpp>
 
 namespace {
     template <typename T>
@@ -71,6 +72,8 @@ BridgeNodeController::BridgeNodeController() :
     // Only bother continuing if base and this class met requirements
     if (node_id_valid)
     {
+        curr_telemetry.configuration.id = node_id;
+
         const auto initial_parent_ids_parameter_value = declare_parameter(
             "initial_parent_ids",
             rclcpp::ParameterType::PARAMETER_INTEGER_ARRAY
@@ -133,7 +136,6 @@ BridgeNodeController::BridgeNodeController() :
                     std::string(get_fully_qualified_name()) + "/telemetry",
                     1
                 );
-                telemetry_pub->publish(curr_telemetry);
             }
             else
             {
@@ -157,6 +159,12 @@ BridgeNodeController::BridgeNodeController() :
 bool BridgeNodeController::are_curr_parent_and_host_ids_valid() const
 {
     return curr_parent_ids_valid && curr_host_id_valid;
+}
+
+void BridgeNodeController::finish_initializing_telemetry(const double radius)
+{
+    curr_telemetry.configuration.radius = radius;
+    telemetry_pub->publish(curr_telemetry);
 }
 
 void BridgeNodeController::handle_add_or_remove_parent_requests(
@@ -345,7 +353,7 @@ void BridgeNodeController::handle_set_host_id_requests(
 
 int main(int argc, char** argv)
 {
-    // Init ROS network, create the node, and spin it
+    // Init ROS network and create the node
     rclcpp::init_and_remove_ros_arguments(argc, argv);
     auto node = std::make_shared<ron_controllers::BridgeNodeController>();
     if (!(node->is_node_id_valid() && node->are_curr_parent_and_host_ids_valid()))
@@ -353,6 +361,23 @@ int main(int argc, char** argv)
         RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Node failed to initialize.");
         return 1;
     }
+
+    // Get RON node static configuration data
+    const std::array<std::string, 1> parameter_names({"bridge_node_radius"});
+    std::array<rclcpp::ParameterValue, 1> parameter_values;
+    const int get_params_rc = ron_common::place_get_parameter_request(
+        node,
+        "ron_configuration/get_parameters",
+        parameter_names,
+        parameter_values
+    );
+    if (get_params_rc != 0)
+    {
+        return get_params_rc+1;
+    }
+
+    // We got the required configuration data, publish initial telem and spin
+    node->finish_initializing_telemetry(parameter_values[0].get<double>());
     rclcpp::spin(node);
     rclcpp::shutdown();
     return 0;
