@@ -2,6 +2,7 @@
 
 #include <rclcpp/client.hpp>
 #include <rclcpp/utilities.hpp>
+#include <ron_common/ros_node_utilities.hpp>
 
 namespace ron_tf {
 
@@ -58,44 +59,29 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    // Create service client to get RON node static configuration data
-    auto get_parameters_scl = node->create_client<rcl_interfaces::srv::GetParameters>(
-        "ron_configuration/get_parameters"
-    );
-    while (!get_parameters_scl->wait_for_service(1s))
-    {
-        if (rclcpp::ok())
-        {
-            RCLCPP_INFO(logger, "'get_parameters' service not available, waiting again...");
-        }
-        else
-        {
-            RCLCPP_ERROR(logger, "Interrupted while waiting for the service.");
-            return 2;
-        }
-    }
-    auto request = std::make_shared<rcl_interfaces::srv::GetParameters::Request>();
-    request->names = {
+    // Get RON node static configuration data
+    const std::array<std::string, 2> parameter_names({
         "robot_node_bottom_face_translation",
         "robot_node_top_face_translation"
-    };
-
-    // We got the requird configuration data, publish static TF's and spin
-    auto result = get_parameters_scl->async_send_request(request);
-    if (rclcpp::FutureReturnCode::SUCCESS == rclcpp::spin_until_future_complete(node, result))
+    });
+    std::array<rclcpp::ParameterValue, 2> parameter_values;
+    const int get_params_rc = ron_common::place_get_parameter_request(
+        node,
+        "ron_configuration/get_parameters",
+        parameter_names,
+        parameter_values
+    );
+    if (get_params_rc != 0)
     {
-        node->broadcast_static_transforms(
-            result.get()->values[0].double_value,
-            result.get()->values[1].double_value
-        );
-        rclcpp::spin(node);
-        rclcpp::shutdown();
-    }
-    else
-    {
-        RCLCPP_ERROR(logger, "Failed to get configuration data");
-        return 3;
+        return get_params_rc+1;
     }
 
+    // We got the required configuration data, publish static TF's and spin
+    node->broadcast_static_transforms(
+        parameter_values[0].get<double>(),
+        parameter_values[1].get<double>()
+    );
+    rclcpp::spin(node);
+    rclcpp::shutdown();
     return 0;
 }
