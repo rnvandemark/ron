@@ -19,6 +19,7 @@ rosidl_generate_interfaces(ron_interfaces
     "msg/BridgeNodeTelemetry.msg"
     "msg/RobotNodeConfiguration.msg"
     "msg/RobotNodeTelemetry.msg"
+    "srv/AddOrRemoveBridgeNodeParent.srv"
     "srv/SetBridgeNodeHost.srv"
 )
 

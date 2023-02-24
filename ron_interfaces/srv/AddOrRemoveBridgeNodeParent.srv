@@ -1,0 +1,18 @@
+# Attempt to add or remove a parent robot node from a bridge node.
+
+# The ID of the parent to add or remove
+int8 parent_id
+
+# True if this should be added as a parent, false if it should be removed
+bool add
+
+# If this request is to remove a parent and it is the current host robot node,
+# then this is the ID of the required new host robot node. If the caller does
+# not care, then this can be set to an invalid RON node ID (i.e. less than 0)
+# and any available parent will become the new host.
+int8 new_host_id
+
+---
+
+# Whether or not the attempt was successful
+bool success
