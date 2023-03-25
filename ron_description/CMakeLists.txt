@@ -11,7 +11,7 @@ ament_target_dependencies(
 )
 
 install(
-    DIRECTORY launch config
+    DIRECTORY config launch urdf
     DESTINATION share/${PROJECT_NAME}
 )
 install(

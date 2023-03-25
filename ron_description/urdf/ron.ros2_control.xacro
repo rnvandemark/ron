@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!-- Overall RON system representation -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="ron">
+    <xacro:arg name="num_robot_nodes" default="1" />
+
+    <!-- Import RViz colors -->
+    <xacro:include filename="$(find ron_description)/urdf/materials.xacro" />
+
+    <!-- Import our robot node's ros2_control description -->
+    <xacro:include filename="$(find ron_description)/urdf/robot_node_description.urdf.xacro" />
+    <xacro:include filename="$(find ron_description)/urdf/robot_node.ros2_control.xacro" />
+
+    <!-- Generate the URDF for an overall RON system -->
+	<xacro:macro name="generate_robot_node" params="items">
+    <xacro:robot_node name="${robot_node_name}" />
+    <xacro:robot_node_ros2_control name="${robot_node_name}" />
+</robot>
