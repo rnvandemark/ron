@@ -1,7 +1,7 @@
 /**/diff_drive_controller:
     ros__parameters:
-###        left_wheel_names: ["robot_node_1_left_wheel_joint"]
-###        right_wheel_names: ["robot_node_1_right_wheel_joint"]
+###        left_wheel_names: ["robot_node_0_left_wheel_joint"]
+###        right_wheel_names: ["robot_node_0_right_wheel_joint"]
 
         wheel_separation: 0.10
         wheels_per_side: 1 #actually 2, but both are controlled by 1 signal
@@ -13,7 +13,7 @@
 
         publish_rate: 50.0
         odom_frame_id: odom
-###        base_frame_id: robot_node_1_base_link
+###        base_frame_id: robot_node_0_base_link
         pose_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.01]
         twist_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.01]
 

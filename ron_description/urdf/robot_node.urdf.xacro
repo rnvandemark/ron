@@ -11,6 +11,6 @@
     <xacro:include filename="$(find ron_description)/urdf/robot_node.ros2_control.xacro" />
 
     <!-- Generate the URDF for a robot node -->
-    <xacro:robot_node name="${robot_node_name}" />
-    <xacro:robot_node_ros2_control name="${robot_node_name}" />
+    <xacro:robot_node name="$(arg robot_node_name)" />
+    <xacro:robot_node_ros2_control name="$(arg robot_node_name)" />
 </robot>
