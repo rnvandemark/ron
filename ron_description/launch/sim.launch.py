@@ -47,20 +47,6 @@ def generate_launch_description():
 #    )
 
     launch_desc = LaunchDescription()
-    launch_desc.add_action(
-        GroupAction([
-            PushRosNamespace(namespace="/robot_node_0"),
-            IncludeLaunchDescription(
-                PythonLaunchDescriptionSource(
-                    PathJoinSubstitution([
-                        FindPackageShare("gazebo_ros2_control_demos"),
-                        "launch",
-                        "diff_drive.launch.py"
-                    ])
-                ),
-            )
-        ])
-    )
 
 #    use_rviz = LaunchConfiguration("use_rviz")
 #    launch_desc.add_action(
@@ -103,5 +89,94 @@ def generate_launch_description():
 #                }.items()
 #            )
 #        )
+#
+#    return launch_desc
 
-    return launch_desc
+from ament_index_python.packages import get_package_share_directory
+from launch import LaunchDescription
+from launch.actions import ExecuteProcess, IncludeLaunchDescription, RegisterEventHandler
+from launch.event_handlers import OnProcessExit
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch_ros.actions import Node
+import os
+import xacro
+
+def generate_launch_description():
+    namespace = LaunchConfiguration("namespace")
+    declare_namespace_cmd = DeclareLaunchArgument(
+        "namespace",
+        default_value="",
+        description="Top-level namespace"
+    )
+
+    absolute_controller_manager_name = LaunchConfiguration(
+        "absolute_controller_manager_name",
+        default=[namespace, "/controller_manager"]
+    )
+
+    xacro_file = os.path.join(
+        get_package_share_directory('ron_description'),
+        'urdf',
+        'dummy.urdf.xacro'
+    )
+
+    doc = xacro.parse(open(xacro_file))
+    xacro.process_doc(doc)
+    params = {'robot_description': doc.toxml()}
+
+    spawn_entity = Node(package='gazebo_ros', executable='spawn_entity.py',
+                        arguments=['-topic', 'robot_description',
+                                   '-robot_namespace', namespace,
+                                   '-entity', 'cartpole'],
+                        namespace=namespace,
+                        output='both')
+
+    node_robot_state_publisher = Node(
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        namespace=namespace,
+        output='both',
+        parameters=[params],
+    )
+
+    load_joint_state_controller = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '-c', absolute_controller_manager_name, '--set-state', 'start', 'joint_state_broadcaster'],
+        output='both'
+    )
+
+    load_joint_trajectory_controller = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '-c', absolute_controller_manager_name, '--set-state', 'start', 'diff_drive_base_controller'],
+        output='both'
+    )
+
+    group = GroupAction([
+        PushRosNamespace(namespace=namespace),
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([
+                os.path.join(
+                    get_package_share_directory('gazebo_ros'),
+                    'launch',
+                    'gazebo.launch.py'
+                )
+            ])
+         ),
+    ])
+
+    return LaunchDescription([
+        declare_namespace_cmd,
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=spawn_entity,
+                on_exit=[load_joint_state_controller],
+            )
+        ),
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=load_joint_state_controller,
+                on_exit=[load_joint_trajectory_controller],
+            )
+        ),
+        group,
+        node_robot_state_publisher,
+        spawn_entity,
+    ])
